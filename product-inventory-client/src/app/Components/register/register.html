@@ -1,0 +1,43 @@
+<div class="page-wrapper">
+  <mat-card>
+    <h2>Register</h2>
+
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+    <p class="success" *ngIf="success()">{{ success() }}</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" />
+        <mat-error *ngIf="registerForm.controls.email.errors?.['required']">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="registerForm.controls.email.errors?.['email']">
+          Enter a valid email
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+        <mat-error *ngIf="registerForm.controls.password.errors?.['required']">
+          Password is required
+        </mat-error>
+        <mat-error *ngIf="registerForm.controls.password.errors?.['minlength']">
+          Minimum 6 characters required
+        </mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit"
+              [disabled]="registerForm.invalid">
+        Register
+      </button>
+
+      <p class="link">
+        Already have an account?
+        <a routerLink="/login">Login</a>
+      </p>
+    </form>
+  </mat-card>
+</div>

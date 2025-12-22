@@ -1,0 +1,34 @@
+<div class="page-wrapper">
+  <mat-card>
+    <h2>Login</h2>
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+    <p class="success" *ngIf="success()">{{ success() }}</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" />
+        <mat-error *ngIf="loginForm.controls.username.errors?.['required']">
+          Username is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+        <mat-error *ngIf="loginForm.controls.password.errors?.['required']">
+          Password is required
+        </mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
+        Login
+      </button>
+
+      <p class="link">
+        New User? <a routerLink="/register">Create an account</a>
+      </p>
+    </form>
+  </mat-card>
+</div>

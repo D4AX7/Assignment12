@@ -1,0 +1,160 @@
+<div class="page-wrapper">
+  <mat-card class="product-card">
+
+    <div class="header-row">
+      <h2>Products</h2>
+      <button mat-raised-button color="primary" type="button" (click)="logout()">
+        Logout
+      </button>
+    </div>
+
+    <!-- PRODUCT FORM -->
+    <form [formGroup]="productForm" (ngSubmit)="saveProduct()" #productFormRef>
+
+      <div class="field-group">
+        <label class="field-label">NAME*</label>
+        <mat-form-field appearance="outline" class="w-100">
+          <input matInput formControlName="name" placeholder="Enter the name of the product" aria-label="Product Name" />
+        </mat-form-field>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">DESCRIPTION*</label>
+        <mat-form-field appearance="outline" class="w-100">
+          <input matInput formControlName="description" placeholder="Enter a short description" aria-label="Product Description" />
+        </mat-form-field>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">PRICE*</label>
+        <mat-form-field appearance="outline" class="w-100">
+          <input matInput type="number" formControlName="price" min="0" placeholder="Enter the price" />
+        </mat-form-field>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">QUANTITY*</label>
+        <mat-form-field appearance="outline" class="w-100">
+          <input matInput type="number" formControlName="quantity" min="0" placeholder="Enter the quantity" />
+        </mat-form-field>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">CATEGORY*</label>
+        <mat-form-field appearance="outline" class="w-100">
+          <input matInput formControlName="category" placeholder="Enter the category (e.g., Electronics)" aria-label="Product Category" />
+        </mat-form-field>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">CREATED DATE*</label>
+        <mat-form-field appearance="outline" class="w-100">
+          <input matInput [matDatepicker]="picker" formControlName="createdDate" placeholder="Select a date" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <mat-checkbox formControlName="isActive">
+        Active
+      </mat-checkbox>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit">
+          {{ isEditMode ? 'Update' : 'Add' }}
+        </button>
+
+        <button mat-raised-button color="primary" type="button" (click)="resetForm()">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+
+    <!-- PRODUCT TABLE -->
+    <div class="field-group search-group">
+      <label class="field-label">SEARCH</label>
+      <mat-form-field appearance="outline" class="w-100">
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search products..." autofocus />
+      </mat-form-field>
+    </div>
+
+    <div class="table-container" #tableContainer>
+      <table mat-table [dataSource]="dataSource" matSort class="products-table">
+
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+          <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <!-- Description Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+          <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+        </ng-container>
+
+        <!-- Price Column -->
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+          <td mat-cell *matCellDef="let element">{{ element.price | currency }}</td>
+        </ng-container>
+
+        <!-- Quantity Column -->
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Quantity</th>
+          <td mat-cell *matCellDef="let element">{{ element.quantity }}</td>
+        </ng-container>
+
+        <!-- Category Column -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+          <td mat-cell *matCellDef="let element">{{ element.category }}</td>
+        </ng-container>
+
+        <!-- Created Date Column -->
+        <ng-container matColumnDef="createdDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
+          <td mat-cell *matCellDef="let element">{{ element.createdDate | date:'mediumDate' }}</td>
+        </ng-container>
+
+        <!-- Active Column -->
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
+          <td mat-cell *matCellDef="let element">
+            <span *ngIf="element.isActive" class="badge-active">Yes</span>
+            <span *ngIf="!element.isActive" class="badge-inactive">No</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button (click)="editProduct(element)" title="Edit">
+              ✎
+            </button>
+            <button mat-icon-button (click)="deleteProduct(element.id)" title="Delete">
+              🗑
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Table Header and Body -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+    </div>
+
+    <!-- Paginator -->
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+
+  </mat-card>
+</div>

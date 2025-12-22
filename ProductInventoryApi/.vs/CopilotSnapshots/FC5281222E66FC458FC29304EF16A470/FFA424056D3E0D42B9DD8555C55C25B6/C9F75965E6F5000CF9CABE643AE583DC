@@ -1,0 +1,76 @@
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProductInventoryApi.Data;
+using ProductInventoryApi.Models;
+
+namespace ProductInventoryApi.Controllers
+{
+    [Authorize]
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductsController : ControllerBase
+    {
+        private readonly ProductsDBContext _ctx;
+
+        public ProductsController(ProductsDBContext ctx)
+        {
+            _ctx = ctx;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProducts()
+        {
+            var products = await _ctx.Products.ToListAsync();
+            return Ok(products);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProductById(int id)
+        {
+            var product = await _ctx.Products.FindAsync(id);
+            if (product is null) return NotFound();
+
+            return Ok(product);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddProduct(Product product)
+        {
+            product.CreatedDate = DateTime.Now;
+            _ctx.Products.Add(product);
+            await _ctx.SaveChangesAsync();
+            return Ok(product);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, Product updated)
+        {
+            var existing = await _ctx.Products.FindAsync(id);
+            if (existing is null) return NotFound();
+
+            existing.Name = updated.Name;
+            existing.Description = updated.Description;
+            existing.Price = updated.Price;
+            existing.Quantity = updated.Quantity;
+            existing.Category = updated.Category;
+            existing.IsActive = updated.IsActive;
+
+            await _ctx.SaveChangesAsync();
+            return Ok(existing);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _ctx.Products.FindAsync(id);
+            if (product is null) return NotFound();
+
+            _ctx.Products.Remove(product);
+            await _ctx.SaveChangesAsync();
+            return Ok();
+        }
+    }
+}
